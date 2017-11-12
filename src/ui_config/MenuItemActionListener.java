@@ -3,7 +3,9 @@ package ui_config;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -33,7 +35,30 @@ public class MenuItemActionListener{
 		};
 		return ItemFileCreateClick;
 	}
-	
+	/**
+	 * 保存事件
+	 * @param globalVar
+	 * @param FileContent
+	 * @return
+	 */
+	public final static ActionListener getItemFileSaveActionListener(GlobalVar globalVar, String FileContent){
+		ActionListener ItemFileSaveClickActiongListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try{
+					FileWriter out = new FileWriter(globalVar.getFilePath());
+					out.write(FileContent);
+					out.close();
+				}catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "保存失败！", "错误", JOptionPane.ERROR_MESSAGE);
+				}finally {
+					
+				}
+			}
+		};
+		return ItemFileSaveClickActiongListener;
+	}
 	/**
 	 * 另存为事件
 	 * @param globalVar
@@ -49,6 +74,42 @@ public class MenuItemActionListener{
 			}
 		};
 		return ItemFileSaveAsClickActionListener;
+	}
+	/**
+	 * 打开文件事件
+	 * @param globalVar
+	 * @param text_to_show 将要显示的文本
+	 * @return
+	 */
+	public final static ActionListener getItemFileOpenClickActionListener(GlobalVar globalVar, char[] text_to_show){
+		ActionListener ItemFileOpenClickActionListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser jfc = new JFileChooser(globalVar.getFilePath());
+				FileNameExtensionFilter filter = new FileNameExtensionFilter(GlobalVar.FileTypeName, GlobalVar.FileExtendsionName);  
+			    jfc.setFileFilter(filter); 
+				jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);  
+				jfc.setDialogTitle("打开文件");
+				jfc.setApproveButtonText("打开");
+				
+				if(jfc.showDialog(null,null) == JFileChooser.APPROVE_OPTION){
+					
+					try{
+						FileReader in = new FileReader(jfc.getSelectedFile().getAbsolutePath());
+						in.read(text_to_show);
+						in.close();
+					}catch (Exception e) {
+						JOptionPane.showMessageDialog(null, "打开失败！", "错误", JOptionPane.ERROR_MESSAGE);
+						System.err.println(e.getMessage());
+					}finally {
+						
+					}
+				}
+				
+			}
+		};
+		return ItemFileOpenClickActionListener;
 	}
 	
 	/**
