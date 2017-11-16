@@ -12,6 +12,12 @@ public class GlobalVar {
 	public GlobalVar(){
 		initFilePath();
 	}
+	/* 
+	 * Frame配置
+	 *  */
+	public final static String DefaultTitle = "TextEditor";
+	public final static int DefaultWidth = 800;
+	public final static int DefaultHeight = 600;
 	/**
 	 * 当前文件路径
 	 */
@@ -21,7 +27,7 @@ public class GlobalVar {
 	 */
 	private void initFilePath(){
 		FileSystemView fsv = FileSystemView.getFileSystemView();
-		FilePath = fsv.getDefaultDirectory().getPath();
+		FilePath = fsv.getDefaultDirectory().getPath() + "/新建自定义文档." + FileExtendsionName;
 	}
 	public String getFilePath(){return FilePath;}
 	public void setFilePath(String FilePath){this.FilePath = FilePath;}

@@ -53,12 +53,14 @@ public class WidgetConfig {
 		Menu menuSetting = new Menu("设置");
 		/* 文件菜单项目  */
 		MenuItem itemFileCreate = new MenuItem("新建...");	menuFile.add(itemFileCreate);	itemFileCreate.addActionListener(MenuItemActionListener.getItemFileCreateClickActionListener(globalVar));
-		MenuItem itemFileOpen = new MenuItem("打开...");		menuFile.add(itemFileOpen);
+		MenuItem itemFileOpen = new MenuItem("打开...");		menuFile.add(itemFileOpen);		itemFileOpen.addActionListener(MenuItemActionListener.getItemFileOpenClickActionListener(globalVar, ""));
 		MenuItem itemFileSave = new MenuItem("保存");			menuFile.add(itemFileSave);		itemFileSave.addActionListener(MenuItemActionListener.getItemFileSaveActionListener(globalVar, ""));
 		MenuItem itemFileSaveAs = new MenuItem("另存为...");	menuFile.add(itemFileSaveAs);	itemFileSaveAs.addActionListener(MenuItemActionListener.getItemFileSaveAsClickActionListener(globalVar, ""));
 		MenuItem itemFileSync = new MenuItem("同步到云");		menuFile.add(itemFileSync);
 		/* 编辑菜单项目 */
 		MenuItem itemEditClear = new MenuItem("清空文本");menuEdit.add(itemEditClear);
+		MenuItem itemEditFind = new MenuItem("查找...");menuEdit.add(itemEditFind);
+		MenuItem itemEditReplace = new MenuItem("替换...");menuEdit.add(itemEditReplace);
 		
 		MenuBarMain.add(menuFile);
 		MenuBarMain.add(menuEdit);

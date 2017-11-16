@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -81,7 +82,7 @@ public class MenuItemActionListener{
 	 * @param text_to_show 将要显示的文本
 	 * @return
 	 */
-	public final static ActionListener getItemFileOpenClickActionListener(GlobalVar globalVar, char[] text_to_show){
+	public static ActionListener getItemFileOpenClickActionListener(GlobalVar globalVar, String text_to_show){
 		ActionListener ItemFileOpenClickActionListener = new ActionListener() {
 			
 			@Override
@@ -96,9 +97,7 @@ public class MenuItemActionListener{
 				if(jfc.showDialog(null,null) == JFileChooser.APPROVE_OPTION){
 					
 					try{
-						FileReader in = new FileReader(jfc.getSelectedFile().getAbsolutePath());
-						in.read(text_to_show);
-						in.close();
+						
 					}catch (Exception e) {
 						JOptionPane.showMessageDialog(null, "打开失败！", "错误", JOptionPane.ERROR_MESSAGE);
 						System.err.println(e.getMessage());
@@ -109,6 +108,7 @@ public class MenuItemActionListener{
 				
 			}
 		};
+		text_to_show="";
 		return ItemFileOpenClickActionListener;
 	}
 	
