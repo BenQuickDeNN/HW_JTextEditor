@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
@@ -162,10 +163,10 @@ public class MainClass {
 		MenuItem itemEditClear = new MenuItem("清空");				menuEdit.add(itemEditClear);		itemEditClear.addActionListener(ItemEditClearClickActionListener);
 		MenuItem itemEditInsertImage = new MenuItem("插入图片...");	menuEdit.add(itemEditInsertImage);
 		MenuItem itemEditFind = new MenuItem("查找...");				menuEdit.add(itemEditFind);			itemEditFind.addActionListener(ItemEditFindClickActionListener);
-		MenuItem itemEditReplace = new MenuItem("替换...");			menuEdit.add(itemEditReplace);
+		MenuItem itemEditReplace = new MenuItem("替换...");			menuEdit.add(itemEditReplace);		itemEditReplace.addActionListener(ItemEditReplaceActionListener);
 		/* 设置菜单项目 */
-		MenuItem itemSettingFont = new MenuItem("字体...");menuSetting.add(itemSettingFont);
-		MenuItem itemSettingNetwork = new MenuItem("网络...");menuSetting.add(itemSettingNetwork);
+		MenuItem itemSettingFont = new MenuItem("字体...");			menuSetting.add(itemSettingFont);
+		MenuItem itemSettingNetwork = new MenuItem("网络...");		menuSetting.add(itemSettingNetwork);
 		
 		MenuBarMain.add(menuFile);
 		MenuBarMain.add(menuEdit);
@@ -289,13 +290,17 @@ public class MainClass {
 			FindFrame.setResizable(false);
 			FindFrame.setLayout(null);
 			FindFrame.setBounds((Screensize.width - width) / 2, (Screensize.height - height) / 2, width, height);
+			
 			TextField keyWordText = new TextField();
 			keyWordText.setBounds(0, 0, 200, 20);
+			
 			Button buttonFind = new Button("查找下一个");
 			buttonFind.setBounds(200, 0, 100, 20);
+			
 			FindFrame.add(keyWordText);
 			FindFrame.add(buttonFind);
 			FindFrame.setVisible(true);
+			
 			buttonFind.addActionListener(new ActionListener() {
 				
 				@Override
@@ -310,6 +315,73 @@ public class MainClass {
 						TextPanel.requestFocusInWindow();// 设置焦点
 						TextPanel.select(textIndex1, textIndex2);
 					}
+				}
+			});
+		}
+	};
+	ActionListener ItemEditReplaceActionListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			/* 弹出查找子窗体 */
+			JFrame FindFrame = new JFrame("替换");
+			int width = 300;
+			int height = 80;
+			Dimension Screensize = Toolkit.getDefaultToolkit().getScreenSize();
+			FindFrame.setResizable(false);
+			FindFrame.setLayout(null);
+			FindFrame.setBounds((Screensize.width - width) / 2, (Screensize.height - height) / 2, width, height);
+			
+			Label keyLabel = new Label("查找内容：");
+			keyLabel.setBounds(0, 0, 60, 20);
+			TextField keyWordText = new TextField();
+			keyWordText.setBounds(60, 0, 140, 20);
+			Label replaceLabel = new Label("替换为：");
+			
+			replaceLabel.setBounds(0, 30, 60, 20);
+			TextField replaceWordText = new TextField();
+			replaceWordText.setBounds(60, 30, 140, 20);
+			
+			Button buttonReplace = new Button("替换下一个");
+			buttonReplace.setBounds(200, 0, 100, 20);
+			Button buttonReplaceAll = new Button("替换全部");
+			buttonReplaceAll.setBounds(200, 30, 100, 20);
+			
+			FindFrame.add(keyLabel);
+			FindFrame.add(replaceLabel);
+			FindFrame.add(keyWordText);
+			FindFrame.add(replaceWordText);
+			FindFrame.add(buttonReplace);
+			FindFrame.add(buttonReplaceAll);
+			FindFrame.setVisible(true);
+			
+			buttonReplace.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					int selectIndex = TextPanel.getSelectionEnd();
+					int textIndex1 = TextPanel.getText().indexOf(keyWordText.getText(), selectIndex);
+					int textIndex2 = textIndex1 + keyWordText.getText().length();
+					System.out.println("selectIndex = " + selectIndex + ", textIndex1 = " + textIndex1 + ", textIndex2 = " + textIndex2);
+					if(textIndex1 == -1 || textIndex2 == -1){
+						JOptionPane.showMessageDialog(null, "未能找到下一个内容", "", JOptionPane.ERROR_MESSAGE);
+					}else{
+						TextPanel.requestFocusInWindow();// 设置焦点
+						TextPanel.select(textIndex1, textIndex2);
+						TextPanel.replaceSelection(replaceWordText.getText());
+						TextPanel.select(textIndex1, textIndex1 + replaceWordText.getText().length());
+					}
+				}
+			});
+			buttonReplaceAll.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					String allText = TextPanel.getText();
+					allText = allText.replace(keyWordText.getText(), replaceWordText.getText());
+					TextPanel.requestFocusInWindow();// 设置焦点
+					TextPanel.setText(allText);
+					JOptionPane.showMessageDialog(null, "替换完成", "", JOptionPane.INFORMATION_MESSAGE);
 				}
 			});
 		}
