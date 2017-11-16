@@ -10,8 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -19,9 +22,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import ui_config.FrameConfig;
-import ui_config.MenuItemActionListener;
-import ui_config.WidgetConfig;
 
 /**
  * Java 文本编辑器 主类
@@ -191,7 +191,7 @@ public class MainClass {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", "", false);
+			showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", TextPanel.getText(), false);
 		}
 	};
 	/**
@@ -202,11 +202,11 @@ public class MainClass {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if(isFirstSaved){
-				showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", "", false);
+				showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", TextPanel.getText(), false);
 			}else{
 				try{
 					FileWriter out = new FileWriter(GlobalVarMain.getFilePath());
-					out.write("");
+					out.write(TextPanel.getText());
 					out.close();
 				}catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "保存失败！", "错误", JOptionPane.ERROR_MESSAGE);
@@ -236,8 +236,19 @@ public class MainClass {
 					if(file.exists()){
 						try{
 							GlobalVarMain.setFilePath(jfc.getSelectedFile().getAbsolutePath());
-							
 							/* 文件读入 */
+							FileInputStream readStream = new FileInputStream(file);
+							InputStreamReader contentReader = new InputStreamReader(readStream);
+							BufferedReader bufferedReader = new BufferedReader(contentReader);
+							String line;
+							String content = "";
+							while((line = bufferedReader.readLine()) != null){
+								content += line;
+							}
+							bufferedReader.close();
+							contentReader.close();
+							readStream.close();
+							TextPanel.setText(content);
 						}catch (Exception e) {
 							JOptionPane.showMessageDialog(null, "打开失败！", "错误", JOptionPane.ERROR_MESSAGE);
 							System.err.println(e.getMessage());
