@@ -1,10 +1,14 @@
 package mainpack;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
+import java.awt.TextArea;
+import java.awt.TextField;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -157,7 +161,7 @@ public class MainClass {
 		/* 编辑菜单项目 */
 		MenuItem itemEditClear = new MenuItem("清空");				menuEdit.add(itemEditClear);		itemEditClear.addActionListener(ItemEditClearClickActionListener);
 		MenuItem itemEditInsertImage = new MenuItem("插入图片...");	menuEdit.add(itemEditInsertImage);
-		MenuItem itemEditFind = new MenuItem("查找...");				menuEdit.add(itemEditFind);
+		MenuItem itemEditFind = new MenuItem("查找...");				menuEdit.add(itemEditFind);			itemEditFind.addActionListener(ItemEditFindClickActionListener);
 		MenuItem itemEditReplace = new MenuItem("替换...");			menuEdit.add(itemEditReplace);
 		/* 设置菜单项目 */
 		MenuItem itemSettingFont = new MenuItem("字体...");menuSetting.add(itemSettingFont);
@@ -271,6 +275,43 @@ public class MainClass {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			TextPanel.setText("");
+		}
+	};
+	ActionListener ItemEditFindClickActionListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			/* 弹出查找子窗体 */
+			JFrame FindFrame = new JFrame("查找");
+			int width = 300;
+			int height = 50;
+			Dimension Screensize = Toolkit.getDefaultToolkit().getScreenSize();
+			FindFrame.setResizable(false);
+			FindFrame.setLayout(null);
+			FindFrame.setBounds((Screensize.width - width) / 2, (Screensize.height - height) / 2, width, height);
+			TextField keyWordText = new TextField();
+			keyWordText.setBounds(0, 0, 200, 20);
+			Button buttonFind = new Button("查找下一个");
+			buttonFind.setBounds(200, 0, 100, 20);
+			FindFrame.add(keyWordText);
+			FindFrame.add(buttonFind);
+			FindFrame.setVisible(true);
+			buttonFind.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					int selectIndex = TextPanel.getSelectionEnd();
+					int textIndex1 = TextPanel.getText().indexOf(keyWordText.getText(), selectIndex);
+					int textIndex2 = textIndex1 + keyWordText.getText().length();
+					System.out.println("selectIndex = " + selectIndex + ", textIndex1 = " + textIndex1 + ", textIndex2 = " + textIndex2);
+					if(textIndex1 == -1 || textIndex2 == -1){
+						JOptionPane.showMessageDialog(null, "未能找到下一个内容", "", JOptionPane.ERROR_MESSAGE);
+					}else{
+						TextPanel.requestFocusInWindow();// 设置焦点
+						TextPanel.select(textIndex1, textIndex2);
+					}
+				}
+			});
 		}
 	};
 	/**
