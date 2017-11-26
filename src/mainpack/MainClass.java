@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -11,6 +12,7 @@ import java.awt.MenuItem;
 import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.Toolkit;
+import java.awt.Desktop.Action;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -23,8 +25,12 @@ import java.io.InputStreamReader;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 
@@ -141,6 +147,7 @@ public class MainClass {
 		TextPanel = new JTextPane();
 		TextPanel.setEditable(true);
 		TextPanel.setVisible(true);
+		TextPanel.setFont(new Font("宋体", Font.PLAIN, 18));
 		MainFrame.add(TextPanel);
 	}
 	/**
@@ -154,19 +161,19 @@ public class MainClass {
 		Menu menuEdit = new Menu("编辑");
 		Menu menuSetting = new Menu("设置");
 		/* 文件菜单项目  */
-		MenuItem itemFileCreate = new MenuItem("新建...");			menuFile.add(itemFileCreate);		itemFileCreate.addActionListener(ItemFileCreateClick);
-		MenuItem itemFileOpen = new MenuItem("打开...");				menuFile.add(itemFileOpen);			itemFileOpen.addActionListener(ItemFileOpenClickActionListener);
-		MenuItem itemFileSave = new MenuItem("保存");					menuFile.add(itemFileSave);			itemFileSave.addActionListener(ItemFileSaveClickActionListener);
-		MenuItem itemFileSaveAs = new MenuItem("另存为...");			menuFile.add(itemFileSaveAs);		itemFileSaveAs.addActionListener(ItemFileSaveAsClickActionListener);
-		MenuItem itemFileSync = new MenuItem("同步到云");				menuFile.add(itemFileSync);
+		MenuItem itemFileCreate = new MenuItem("新建...");			menuFile.add(itemFileCreate);			itemFileCreate.addActionListener(ItemFileCreateClick);
+		MenuItem itemFileOpen = new MenuItem("打开...");				menuFile.add(itemFileOpen);				itemFileOpen.addActionListener(ItemFileOpenClickActionListener);
+		MenuItem itemFileSave = new MenuItem("保存");					menuFile.add(itemFileSave);				itemFileSave.addActionListener(ItemFileSaveClickActionListener);
+		MenuItem itemFileSaveAs = new MenuItem("另存为...");			menuFile.add(itemFileSaveAs);			itemFileSaveAs.addActionListener(ItemFileSaveAsClickActionListener);
+		MenuItem itemFileSync = new MenuItem("同步到云");				menuFile.add(itemFileSync);				itemFileSync.addActionListener(ItemFileSyncClickActionListener);
 		/* 编辑菜单项目 */
-		MenuItem itemEditClear = new MenuItem("清空");				menuEdit.add(itemEditClear);		itemEditClear.addActionListener(ItemEditClearClickActionListener);
-		MenuItem itemEditInsertImage = new MenuItem("插入图片...");	menuEdit.add(itemEditInsertImage);
-		MenuItem itemEditFind = new MenuItem("查找...");				menuEdit.add(itemEditFind);			itemEditFind.addActionListener(ItemEditFindClickActionListener);
-		MenuItem itemEditReplace = new MenuItem("替换...");			menuEdit.add(itemEditReplace);		itemEditReplace.addActionListener(ItemEditReplaceActionListener);
+		MenuItem itemEditClear = new MenuItem("清空");				menuEdit.add(itemEditClear);			itemEditClear.addActionListener(ItemEditClearClickActionListener);
+		MenuItem itemEditInsertImage = new MenuItem("插入图片...");	menuEdit.add(itemEditInsertImage);		itemEditInsertImage.addActionListener(ItemEditInsertImageActionListener);
+		MenuItem itemEditFind = new MenuItem("查找...");				menuEdit.add(itemEditFind);				itemEditFind.addActionListener(ItemEditFindClickActionListener);
+		MenuItem itemEditReplace = new MenuItem("替换...");			menuEdit.add(itemEditReplace);			itemEditReplace.addActionListener(ItemEditReplaceActionListener);
 		/* 设置菜单项目 */
-		MenuItem itemSettingFont = new MenuItem("字体...");			menuSetting.add(itemSettingFont);
-		MenuItem itemSettingNetwork = new MenuItem("网络...");		menuSetting.add(itemSettingNetwork);
+		MenuItem itemSettingFont = new MenuItem("字体...");			menuSetting.add(itemSettingFont);		itemSettingFont.addActionListener(ItemSettingFontActionListener);
+		MenuItem itemSettingNetwork = new MenuItem("网络...");		menuSetting.add(itemSettingNetwork);	itemSettingNetwork.addActionListener(ItemSettingNetworkActionListener);
 		
 		MenuBarMain.add(menuFile);
 		MenuBarMain.add(menuEdit);
@@ -186,6 +193,7 @@ public class MainClass {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			TextPanel.setText("");
+			TextPanel.setFont(new Font("宋体", Font.PLAIN, 18));
 			isFirstSaved = true;
 		}
 	};
@@ -271,6 +279,21 @@ public class MainClass {
 			}			
 		}
 	};
+	/**
+	 * 同步
+	 */
+	ActionListener ItemFileSyncClickActionListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
+	/**
+	 * 清空文字
+	 */
 	ActionListener ItemEditClearClickActionListener = new ActionListener() {
 		
 		@Override
@@ -278,6 +301,9 @@ public class MainClass {
 			TextPanel.setText("");
 		}
 	};
+	/**
+	 * 查找
+	 */
 	ActionListener ItemEditFindClickActionListener = new ActionListener() {
 		
 		@Override
@@ -319,6 +345,9 @@ public class MainClass {
 			});
 		}
 	};
+	/**
+	 * 替换
+	 */
 	ActionListener ItemEditReplaceActionListener = new ActionListener() {
 		
 		@Override
@@ -431,4 +460,73 @@ public class MainClass {
 			}
 		}
 	}
+
+	/**
+	 * 插入图片
+	 */
+	ActionListener ItemEditInsertImageActionListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
+	/**
+	 * 设置字体
+	 */
+	ActionListener ItemSettingFontActionListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			JFrame FontFrame = new JFrame("选择字体");
+			FontFrame.setResizable(false);
+			int width = 320;
+			int height = 100;
+			Dimension Screensize = Toolkit.getDefaultToolkit().getScreenSize();
+			FontFrame.setBounds((Screensize.width - width) / 2, (Screensize.height - height) / 2, width, height);
+			FontFrame.setLayout(null);
+			
+			String[] FontType = {"宋体", "黑体"};
+			JList<String> FontList = new JList<String>(FontType);
+			FontList.setBounds(10,10,300,50);
+			FontList.setVisible(true);
+			FontList.addListSelectionListener(new ListSelectionListener() {
+				
+				@Override
+				public void valueChanged(ListSelectionEvent arg0) {
+					switch (FontList.getSelectedValue()) {
+					case "宋体":
+						TextPanel.setFont(new Font("宋体", Font.PLAIN, 18));
+						break;
+					case "黑体":
+						TextPanel.setFont(new Font("黑体", Font.BOLD, 20));
+					default:
+						break;
+					}
+				}
+			});
+			
+			JScrollPane scrollPane = new JScrollPane(FontList);
+			scrollPane.setBounds(FontList.getBounds());
+			scrollPane.setVisible(true);
+			
+			
+			FontFrame.add(scrollPane);
+			FontFrame.setVisible(true);
+		}
+	};
+	/**
+	 * 设置网络
+	 */
+	ActionListener ItemSettingNetworkActionListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
 }
