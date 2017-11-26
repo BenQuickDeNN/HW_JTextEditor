@@ -5,6 +5,8 @@ import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -22,11 +24,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.event.ListSelectionEvent;
@@ -49,6 +54,11 @@ public class MainClass {
 	 * 文本编辑框
 	 */
 	JTextPane TextPanel;
+	/**
+	 * 图片显示板
+	 */
+	int ImageLocationY = 10;
+	ArrayList<ImagePanel> ImagePanels;
 	/**
 	 * 全局变量
 	 */
@@ -81,7 +91,8 @@ public class MainClass {
 	 */
 	private void initialFrame(){
 		MainFrame = new JFrame(GlobalVar.DefaultTitle);
-		MainFrame.setLayout(new BorderLayout());
+		MainFrame.setLayout(null);
+		MainFrame.setResizable(false);
 		Dimension ScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (ScreenSize.width - GlobalVar.DefaultWidth) / 2;
 		int y = (ScreenSize.height - GlobalVar.DefaultHeight) / 2;
@@ -137,6 +148,7 @@ public class MainClass {
 	 */
 	private void initialWidget(){
 		initTextPane();
+		initImagePanel();
 		initMenuBar();
 	}
 	/**
@@ -147,8 +159,15 @@ public class MainClass {
 		TextPanel = new JTextPane();
 		TextPanel.setEditable(true);
 		TextPanel.setVisible(true);
+		TextPanel.setBounds(10, 10, MainFrame.getWidth() / 2, MainFrame.getHeight() - 20);
 		TextPanel.setFont(new Font("宋体", Font.PLAIN, 18));
 		MainFrame.add(TextPanel);
+	}
+	/**
+	 * 初始化图片显示板
+	 */
+	private void initImagePanel(){
+		ImagePanels = new ArrayList<ImagePanel>();
 	}
 	/**
 	 * 初始化菜单栏
@@ -468,8 +487,41 @@ public class MainClass {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
+			JFileChooser jfc = new JFileChooser(GlobalVarMain.getFilePath());
+			FileNameExtensionFilter filter = new FileNameExtensionFilter(GlobalVar.ImageFileTypeName, GlobalVar.ImageExtendsionName);  
+		    jfc.setFileFilter(filter); 
+			jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);  
+			jfc.setDialogTitle("插入图片");
+			jfc.setApproveButtonText("打开");
 			
+			if(jfc.showDialog(null,null) == JFileChooser.APPROVE_OPTION){
+				if(!jfc.getSelectedFile().getAbsolutePath().isEmpty()){
+					File file = new File(jfc.getSelectedFile().getAbsolutePath());
+					if(file.exists()){
+						try{
+							Image image = ImageIO.read(file);
+							ImagePanel panel = new ImagePanel(image);
+							panel.setVisible(true);
+							panel.setBounds(TextPanel.getWidth() + 20, 10, 100, 100);
+							panel.repaint();
+							TextPanel.setVisible(false);
+							MainFrame.add(panel);
+							//ImagePanels.add(panel);
+						}catch (Exception e) {
+							JOptionPane.showMessageDialog(null, "打开失败！", "错误", JOptionPane.ERROR_MESSAGE);
+							System.err.println(e.getMessage());
+						}finally {
+							isFirstSaved = false;
+						}
+					}else{
+						JOptionPane.showMessageDialog(null, "文件不存在！", "错误", JOptionPane.ERROR_MESSAGE);
+						actionPerformed(arg0);// 再做一次
+					}
+				}else{
+					JOptionPane.showMessageDialog(null, "请输入文件名！", "文件名不能为空", JOptionPane.WARNING_MESSAGE);
+					actionPerformed(arg0);// 再做一次
+				}
+			}
 		}
 	};
 	
@@ -528,5 +580,35 @@ public class MainClass {
 			
 		}
 	};
+	
+	/**
+	 * 自定义图片框
+	 * @author Ben Quick
+	 *
+	 */
+	class ImagePanel extends JPanel{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		Image image;
+		final int width = 100;
+		final int height = 100;
+		public ImagePanel(Image image){
+			this.image = image;
+			//this.setBounds(TextPanel.getWidth() + 50, 0, width, height);
+			//this.repaint();
+			//ImageLocationY += 100;
+		}
+		public void paint(Graphics g){
+			try{
+				g.drawImage(image, 100, 100, width, height, null);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}finally{
+				
+			}
+		}
+	}
 	
 }

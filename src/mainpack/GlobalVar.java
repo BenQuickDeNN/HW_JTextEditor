@@ -40,4 +40,12 @@ public class GlobalVar {
 	 * 文件类型名
 	 */
 	public final static String FileTypeName = "自定义文档(*.mydoc)";
+	/**
+	 * 图片类型名
+	 */
+	public final static String ImageFileTypeName = "位图(*.bmp)";
+	/**
+	 * 图片文件扩展名
+	 */
+	public final static String ImageExtendsionName = "bmp";
 }
