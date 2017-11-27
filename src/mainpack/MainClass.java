@@ -13,6 +13,8 @@ import java.awt.TextField;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -61,6 +63,14 @@ public class MainClass {
 	 * 是否第一次保存
 	 */
 	boolean isFirstSaved = true;
+	/**
+	 * 服务器IP地址
+	 */
+	String ServerIP = "127.0.0.1";
+	/**
+	 * 服务器应用程序端口
+	 */
+	int ServerPort = 4700;
 	public MainClass() {
 		initialGlobalVar();
 		initialFrame();
@@ -223,6 +233,8 @@ public class MainClass {
 			saveFile.setTextContent(TextPanel.getText());
 			saveFile.setImageBase64(ImageHelper.convertImgToBase64(imagePane.getImage(), imagePane.width, imagePane.height));
 			saveFile.setFontType(TextPanel.getFont().getFontName());
+			saveFile.setIPAddress(ServerIP);
+			saveFile.setPort(ServerPort);
 			showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", XMLHelper.encodeXMLDoc(saveFile), false);
 		}
 	};
@@ -237,6 +249,8 @@ public class MainClass {
 			saveFile.setTextContent(TextPanel.getText());
 			saveFile.setImageBase64(ImageHelper.convertImgToBase64(imagePane.getImage(), imagePane.width, imagePane.height));
 			saveFile.setFontType(TextPanel.getFont().getFontName());
+			saveFile.setIPAddress(ServerIP);
+			saveFile.setPort(ServerPort);
 			if(isFirstSaved){
 				showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", XMLHelper.encodeXMLDoc(saveFile), false);
 			}else{
@@ -297,6 +311,8 @@ public class MainClass {
 							TextPanel.setText(saveFile.getTextContent());
 							imagePane.setImage(ImageHelper.convertBase64ToImg(saveFile.getImageBase64()));
 							imagePane.repaint();
+							ServerIP = saveFile.getIPAddress();
+							ServerPort = saveFile.getPort();
 						}catch (Exception e) {
 							JOptionPane.showMessageDialog(null, "打开失败！", "错误", JOptionPane.ERROR_MESSAGE);
 							System.err.println(e.getMessage());
@@ -586,8 +602,45 @@ public class MainClass {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
+			JFrame NetFrame = new JFrame("网络设置");
+			NetFrame.setResizable(false);
+			int width = 320;
+			int height = 100;
+			Dimension Screensize = Toolkit.getDefaultToolkit().getScreenSize();
+			NetFrame.setBounds((Screensize.width - width) / 2, (Screensize.height - height) / 2, width, height);
+			NetFrame.setLayout(null);
 			
+			Label labelIP = new Label("服务器地址：");
+			labelIP.setBounds(10, 10, 100, 20);
+			TextField textIP = new TextField();
+			textIP.setBounds(110, 10, 200, 20);
+			textIP.setText(ServerIP);
+			textIP.addTextListener(new TextListener() {
+				
+				@Override
+				public void textValueChanged(TextEvent e) {
+					ServerIP = textIP.getText();
+				}
+			});
+			
+			Label labelPort = new Label("通信端口：");
+			labelPort.setBounds(10, 40, 100, 20);
+			TextField textPort = new TextField();
+			textPort.setText(ServerPort + "");
+			textPort.setBounds(110, 40, 200, 20);
+			textPort.addTextListener(new TextListener() {
+				
+				@Override
+				public void textValueChanged(TextEvent e) {
+					ServerPort = Integer.parseInt(textPort.getText());
+				}
+			});
+			
+			NetFrame.add(labelIP);
+			NetFrame.add(textIP);
+			NetFrame.add(labelPort);
+			NetFrame.add(textPort);
+			NetFrame.setVisible(true);
 		}
 	};
 	

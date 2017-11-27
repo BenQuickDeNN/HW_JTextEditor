@@ -60,4 +60,39 @@ public class SaveFile {
 	public String getImageBase64(){
 		return ImageBase64;
 	}
+	/**
+	 * 服务器IP地址
+	 */
+	private String IPv4Address;
+	/**
+	 * 设置IP地址
+	 * @param IPv4Address
+	 */
+	public void setIPAddress(String IPv4Address){
+		this.IPv4Address = IPv4Address;
+	}
+	/**
+	 * 获取IP地址
+	 * @return
+	 */
+	public String getIPAddress(){
+		return IPv4Address;
+	}
+	/**
+	 * 通信端口
+	 */
+	private int Port;
+	/**
+	 * 设置通信端口
+	 * @param Port
+	 */
+	public void setPort(int Port){
+		this.Port = Port;
+	}
+	/**
+	 * 获取端口
+	 */
+	public int getPort(){
+		return Port;
+	}
 }
