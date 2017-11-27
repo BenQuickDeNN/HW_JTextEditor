@@ -43,7 +43,7 @@ public class ImageHelper {
      * @param imgFilePath 保存图片全路径地址
      * @return
      */
-    public static Image convertBase64ToImg(String imgStr){
+    public static BufferedImage convertBase64ToImg(String imgStr){
         //
         if (imgStr == null) return null;
         byte[] buff = null;
@@ -66,7 +66,7 @@ public class ImageHelper {
         }finally {
 			
 		}
-        Image image = null;
+        BufferedImage image = null;
         try {
 			image = ImageIO.read(new ByteArrayInputStream(buff));
 		}catch (IOException e) {

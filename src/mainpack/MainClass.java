@@ -284,7 +284,19 @@ public class MainClass {
 							bufferedReader.close();
 							contentReader.close();
 							readStream.close();
-							TextPanel.setText(content);
+							SaveFile saveFile = XMLHelper.decodeXMLDoc(content);
+							switch (saveFile.getFontType()) {
+							case "宋体":
+								TextPanel.setFont(new Font("宋体", Font.PLAIN, 18));
+								break;
+							case "黑体":
+								TextPanel.setFont(new Font("黑体", Font.BOLD, 20));
+							default:
+								break;
+							}
+							TextPanel.setText(saveFile.getTextContent());
+							imagePane.setImage(ImageHelper.convertBase64ToImg(saveFile.getImageBase64()));
+							imagePane.repaint();
 						}catch (Exception e) {
 							JOptionPane.showMessageDialog(null, "打开失败！", "错误", JOptionPane.ERROR_MESSAGE);
 							System.err.println(e.getMessage());
