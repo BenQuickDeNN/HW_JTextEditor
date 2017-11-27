@@ -1,21 +1,16 @@
 package mainpack;
 
-import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
-import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.Toolkit;
-import java.awt.Desktop.Action;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -26,8 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -160,9 +153,10 @@ public class MainClass {
 		TextPanel = new JTextPane();
 		TextPanel.setEditable(true);
 		TextPanel.setVisible(true);
-		TextPanel.setBounds(10, 10, MainFrame.getWidth() / 2, MainFrame.getHeight() - 20);
+		TextPanel.setBounds(10, 10, 660, MainFrame.getHeight() - 20);
 		TextPanel.setFont(new Font("宋体", Font.PLAIN, 18));
 		MainFrame.add(TextPanel);
+		isFirstSaved = true;
 	}
 	/**
 	 * 初始化图片显示板
@@ -516,7 +510,6 @@ public class MainClass {
 							JOptionPane.showMessageDialog(null, "打开失败！", "错误", JOptionPane.ERROR_MESSAGE);
 							System.err.println(e.getMessage());
 						}finally {
-							isFirstSaved = false;
 						}
 					}else{
 						JOptionPane.showMessageDialog(null, "文件不存在！", "错误", JOptionPane.ERROR_MESSAGE);
@@ -601,7 +594,7 @@ public class MainClass {
 		final int height = 100;
 		public ImagePanel(BufferedImage image){
 			this.image = image;
-			this.setBounds(500, 100, width, height);
+			this.setBounds(680, 100, width, height);
 			this.setBackground(Color.blue);
 		}
 		public void setImage(BufferedImage image){
@@ -612,13 +605,10 @@ public class MainClass {
 		}
 		public void paint(Graphics g){
 			try{
-				if(image != null)g.drawImage(image, 0, 0, width, height, null);
+				if(image != null) g.drawImage(image, 0, 0, width, height, null);
 				else{
 					g.setColor(Color.blue);
 					g.fillRect(0, 0, width, height);
-					g.setColor(Color.red);
-					g.setFont(new Font("黑体", Font.PLAIN, 8));
-					g.drawString("这里显示图片", width / 2 - 10, height / 2 - 10);
 				}
 			}catch (Exception e) {
 				e.printStackTrace();
