@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -224,7 +225,11 @@ public class MainClass {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", TextPanel.getText(), false);
+			SaveFile saveFile = new SaveFile();
+			saveFile.setTextContent(TextPanel.getText());
+			saveFile.setImageBase64(ImageHelper.convertImgToBase64(imagePane.getImage(), imagePane.width, imagePane.height));
+			saveFile.setFontType(TextPanel.getFont().getFontName());
+			showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", XMLHelper.encodeXMLDoc(saveFile), false);
 		}
 	};
 	/**
@@ -234,12 +239,16 @@ public class MainClass {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
+			SaveFile saveFile = new SaveFile();
+			saveFile.setTextContent(TextPanel.getText());
+			saveFile.setImageBase64(ImageHelper.convertImgToBase64(imagePane.getImage(), imagePane.width, imagePane.height));
+			saveFile.setFontType(TextPanel.getFont().getFontName());
 			if(isFirstSaved){
-				showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", TextPanel.getText(), false);
+				showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", XMLHelper.encodeXMLDoc(saveFile), false);
 			}else{
 				try{
 					FileWriter out = new FileWriter(GlobalVarMain.getFilePath());
-					out.write(TextPanel.getText());
+					out.write(XMLHelper.encodeXMLDoc(saveFile));
 					out.close();
 				}catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "保存失败！", "错误", JOptionPane.ERROR_MESSAGE);
@@ -500,7 +509,7 @@ public class MainClass {
 					File file = new File(jfc.getSelectedFile().getAbsolutePath());
 					if(file.exists()){
 						try{
-							Image image = ImageIO.read(file);
+							BufferedImage image = ImageIO.read(file);
 							imagePane.setImage(image);
 							imagePane.repaint();
 						}catch (Exception e) {
@@ -587,16 +596,19 @@ public class MainClass {
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		Image image;
-		final int width = 300;
-		final int height = 300;
-		public ImagePanel(Image image){
+		BufferedImage image;
+		final int width = 100;
+		final int height = 100;
+		public ImagePanel(BufferedImage image){
 			this.image = image;
-			this.setBounds(450, 100, width, height);
+			this.setBounds(500, 100, width, height);
 			this.setBackground(Color.blue);
 		}
-		public void setImage(Image image){
+		public void setImage(BufferedImage image){
 			this.image = image;
+		}
+		public BufferedImage getImage(){
+			return image;
 		}
 		public void paint(Graphics g){
 			try{
@@ -605,8 +617,8 @@ public class MainClass {
 					g.setColor(Color.blue);
 					g.fillRect(0, 0, width, height);
 					g.setColor(Color.red);
-					g.setFont(new Font("黑体", Font.PLAIN, 20));
-					g.drawString("这里显示图片", width / 2 - 60, height / 2 - 10);
+					g.setFont(new Font("黑体", Font.PLAIN, 8));
+					g.drawString("这里显示图片", width / 2 - 10, height / 2 - 10);
 				}
 			}catch (Exception e) {
 				e.printStackTrace();
