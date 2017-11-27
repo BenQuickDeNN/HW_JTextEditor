@@ -95,4 +95,22 @@ public class SaveFile {
 	public int getPort(){
 		return Port;
 	}
+	/**
+	 * 文件名
+	 */
+	private String FileName;
+	/**
+	 * 设置文件名
+	 * @param FileName
+	 */
+	public void setFileName(String FileName){
+		this.FileName = FileName;
+	}
+	/**
+	 * 获取文件名
+	 * @return
+	 */
+	public String getFileName(){
+		return FileName;
+	}
 }

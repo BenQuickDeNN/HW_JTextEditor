@@ -22,7 +22,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -71,6 +77,10 @@ public class MainClass {
 	 * 服务器应用程序端口
 	 */
 	int ServerPort = 4700;
+	/**
+	 * 文件名
+	 */
+	String FileName = "新建文档." + GlobalVar.FileExtendsionName;
 	public MainClass() {
 		initialGlobalVar();
 		initialFrame();
@@ -220,6 +230,7 @@ public class MainClass {
 			TextPanel.setText("");
 			TextPanel.setFont(new Font("宋体", Font.PLAIN, 18));
 			isFirstSaved = true;
+			FileName = "新建文档." + GlobalVar.FileExtendsionName;
 		}
 	};
 	/**
@@ -229,13 +240,8 @@ public class MainClass {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			SaveFile saveFile = new SaveFile();
-			saveFile.setTextContent(TextPanel.getText());
-			saveFile.setImageBase64(ImageHelper.convertImgToBase64(imagePane.getImage(), imagePane.width, imagePane.height));
-			saveFile.setFontType(TextPanel.getFont().getFontName());
-			saveFile.setIPAddress(ServerIP);
-			saveFile.setPort(ServerPort);
-			showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", XMLHelper.encodeXMLDoc(saveFile), false);
+			
+			showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", false);
 		}
 	};
 	/**
@@ -245,17 +251,19 @@ public class MainClass {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			SaveFile saveFile = new SaveFile();
-			saveFile.setTextContent(TextPanel.getText());
-			saveFile.setImageBase64(ImageHelper.convertImgToBase64(imagePane.getImage(), imagePane.width, imagePane.height));
-			saveFile.setFontType(TextPanel.getFont().getFontName());
-			saveFile.setIPAddress(ServerIP);
-			saveFile.setPort(ServerPort);
+
 			if(isFirstSaved){
-				showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", XMLHelper.encodeXMLDoc(saveFile), false);
+				showSaveFileDialog("另存为", "保存", "错误", "文件保存失败！", false);
 			}else{
 				try{
 					FileWriter out = new FileWriter(GlobalVarMain.getFilePath());
+					SaveFile saveFile = new SaveFile();
+					saveFile.setTextContent(TextPanel.getText());
+					saveFile.setImageBase64(ImageHelper.convertImgToBase64(imagePane.getImage(), imagePane.width, imagePane.height));
+					saveFile.setFontType(TextPanel.getFont().getFontName());
+					saveFile.setIPAddress(ServerIP);
+					saveFile.setPort(ServerPort);
+					saveFile.setFileName(FileName);
 					out.write(XMLHelper.encodeXMLDoc(saveFile));
 					out.close();
 				}catch (Exception e) {
@@ -337,10 +345,43 @@ public class MainClass {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			
+			new ConnectThread().start();
 		}
 	};
+	/**
+	 * 执行连接服务器的线程
+	 * @author Ben Quick
+	 *
+	 */
+	class ConnectThread extends Thread{
+		public void run(){
+			SaveFile saveFile = new SaveFile();
+			saveFile.setTextContent(TextPanel.getText());
+			saveFile.setImageBase64(ImageHelper.convertImgToBase64(imagePane.getImage(), imagePane.width, imagePane.height));
+			saveFile.setFontType(TextPanel.getFont().getFontName());
+			saveFile.setIPAddress(ServerIP);
+			saveFile.setPort(ServerPort);
+			saveFile.setFileName(FileName);
+			String transferString = XMLHelper.encodeXMLDoc(saveFile);// 待传送字符串
+			try {
+				Socket socket = new Socket(ServerIP, ServerPort);
+				OutputStream outputStream = socket.getOutputStream();
+				PrintWriter fileWriter = new PrintWriter(outputStream, true);
+				fileWriter.print(transferString);// 向服务端发送数据
+				fileWriter.close();
+				outputStream.close();
+				socket.close();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally {
+				
+			}
+		}
+	}
 	
 	/**
 	 * 清空文字
@@ -474,7 +515,7 @@ public class MainClass {
 	 * @param errorMessageContent 错误消息内容
 	 * @param FileContent 文件内容
 	 */
-	private  void showSaveFileDialog(String title, String approveButtonText, String errorMessageTitle, String errorMmessageContent, String FileContent, boolean firstSaved){
+	private  void showSaveFileDialog(String title, String approveButtonText, String errorMessageTitle, String errorMmessageContent, boolean firstSaved){
 		JFileChooser jfc = new JFileChooser(GlobalVarMain.getFilePath());
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(GlobalVar.FileTypeName, GlobalVar.FileExtendsionName);  
 	    jfc.setFileFilter(filter); 
@@ -491,8 +532,16 @@ public class MainClass {
 						GlobalVarMain.setFilePath(f);
 						try{
 							if(f.indexOf("." + GlobalVar.FileExtendsionName)==-1){f += "." + GlobalVar.FileExtendsionName;} // 补上扩展名
-							FileWriter out = new FileWriter(f);  
-							out.write(FileContent);  
+							FileWriter out = new FileWriter(f); 
+							FileName = fi.getName();
+							SaveFile saveFile = new SaveFile();
+							saveFile.setTextContent(TextPanel.getText());
+							saveFile.setImageBase64(ImageHelper.convertImgToBase64(imagePane.getImage(), imagePane.width, imagePane.height));
+							saveFile.setFontType(TextPanel.getFont().getFontName());
+							saveFile.setIPAddress(ServerIP);
+							saveFile.setPort(ServerPort);
+							saveFile.setFileName(FileName);
+							out.write(XMLHelper.encodeXMLDoc(saveFile));  
 							out.close();  
 						}  
 						catch(Exception e){
@@ -502,12 +551,12 @@ public class MainClass {
 							isFirstSaved = firstSaved;
 						}
 					}else{
-						showSaveFileDialog(title, approveButtonText, errorMessageTitle, errorMmessageContent, FileContent, firstSaved);// 再做一次
+						showSaveFileDialog(title, approveButtonText, errorMessageTitle, errorMmessageContent, firstSaved);// 再做一次
 					}
 				}
 			}else{
 				JOptionPane.showMessageDialog(null, "请输入文件名！", "文件名不能为空", JOptionPane.WARNING_MESSAGE);
-				showSaveFileDialog(title, approveButtonText, errorMessageTitle, errorMmessageContent, FileContent, firstSaved);// 再做一次
+				showSaveFileDialog(title, approveButtonText, errorMessageTitle, errorMmessageContent, firstSaved);// 再做一次
 			}
 		}
 	}
