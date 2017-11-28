@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -201,6 +202,7 @@ public class MainClass {
 		MenuItem itemFileSave = new MenuItem("保存");					menuFile.add(itemFileSave);				itemFileSave.addActionListener(ItemFileSaveClickActionListener);
 		MenuItem itemFileSaveAs = new MenuItem("另存为...");			menuFile.add(itemFileSaveAs);			itemFileSaveAs.addActionListener(ItemFileSaveAsClickActionListener);
 		MenuItem itemFileSync = new MenuItem("同步到云");				menuFile.add(itemFileSync);				itemFileSync.addActionListener(ItemFileSyncClickActionListener);
+		MenuItem itemFileGet = new MenuItem("从云中读取文件");			menuFile.add(itemFileGet);				itemFileGet.addActionListener(ItemFileGetActionListener);
 		/* 编辑菜单项目 */
 		MenuItem itemEditClear = new MenuItem("清空");				menuEdit.add(itemEditClear);			itemEditClear.addActionListener(ItemEditClearClickActionListener);
 		MenuItem itemEditInsertImage = new MenuItem("插入图片...");	menuEdit.add(itemEditInsertImage);		itemEditInsertImage.addActionListener(ItemEditInsertImageActionListener);
@@ -231,6 +233,8 @@ public class MainClass {
 			TextPanel.setFont(new Font("宋体", Font.PLAIN, 18));
 			isFirstSaved = true;
 			FileName = "新建文档." + GlobalVar.FileExtendsionName;
+			imagePane.setImage(null);
+			imagePane.repaint();
 		}
 	};
 	/**
@@ -367,22 +371,113 @@ public class MainClass {
 				Socket socket = new Socket(ServerIP, ServerPort);
 				OutputStream outputStream = socket.getOutputStream();
 				PrintWriter fileWriter = new PrintWriter(outputStream, true);
-				fileWriter.print(transferString);// 向服务端发送数据
+				fileWriter.print(GlobalVar.CTRL_SEND + "\r\n" + saveFile.getFileName() + "\r\n" + transferString + "\r\n");// 向服务端发送数据
 				fileWriter.close();
 				outputStream.close();
 				socket.close();
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally {
 				
 			}
 		}
 	}
-	
+	/**
+	 * 从云中读取文件事件
+	 */
+	ActionListener ItemFileGetActionListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			JFrame FileNameFrame = new JFrame("请输入您要获取的文件名");
+			int width = 300;
+			int height = 70;
+			Dimension Screensize = Toolkit.getDefaultToolkit().getScreenSize();
+			FileNameFrame.setResizable(false);
+			FileNameFrame.setLayout(null);
+			FileNameFrame.setBounds((Screensize.width - width) / 2, (Screensize.height - height) / 2, width, height);
+			
+			TextField FileNameText = new TextField();
+			FileNameText.setBounds(10, 10, 220, 20);
+			FileNameText.setVisible(true);
+			FileNameFrame.add(FileNameText);
+			
+			Button buttonConfirm = new Button("获取");
+			buttonConfirm.setBounds(240, 10, 50, 20);
+			buttonConfirm.setVisible(true);
+			buttonConfirm.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					FileName = FileNameText.getText();
+					new GETThread().start();
+				}
+			});
+			FileNameFrame.add(buttonConfirm);
+			
+			FileNameFrame.setVisible(true);
+		}
+	};
+	/**
+	 * 执行获取文件的线程
+	 * @author Ben Quick
+	 *
+	 */
+	class GETThread extends Thread{
+		public void run(){
+			
+			try {
+				Socket socket = new Socket(ServerIP, ServerPort);
+				OutputStream outputStream = socket.getOutputStream();
+				PrintWriter fileWriter = new PrintWriter(outputStream, false);
+				System.err.println(FileName);
+				fileWriter.print(GlobalVar.CTRL_GET + "\r\n" + FileName + "\r\n");// 向服务端发送数据
+				fileWriter.flush();
+				
+				/* 获取服务端发送的内容 */
+				InputStream inputStream = socket.getInputStream();
+				InputStreamReader contentReader = new InputStreamReader(inputStream);
+				
+				BufferedReader lineReader = new BufferedReader(contentReader);
+				String line = "";
+				String content = "";
+				while((line = lineReader.readLine()) != null){
+					content += line;
+				}
+				lineReader.close();
+				contentReader.close();
+				inputStream.close();
+				
+				fileWriter.close();
+				outputStream.close();
+				socket.close();
+				
+				SaveFile saveFile = XMLHelper.decodeXMLDoc(content);
+				switch (saveFile.getFontType()) {
+				case "宋体":
+					TextPanel.setFont(new Font("宋体", Font.PLAIN, 18));
+					break;
+				case "黑体":
+					TextPanel.setFont(new Font("黑体", Font.BOLD, 20));
+				default:
+					break;
+				}
+				TextPanel.setText(saveFile.getTextContent());
+				imagePane.setImage(ImageHelper.convertBase64ToImg(saveFile.getImageBase64()));
+				imagePane.repaint();
+				ServerIP = saveFile.getIPAddress();
+				ServerPort = saveFile.getPort();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}finally {
+				
+			}
+		}
+	}
 	/**
 	 * 清空文字
 	 */

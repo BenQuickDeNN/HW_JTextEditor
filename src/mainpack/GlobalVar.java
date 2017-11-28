@@ -48,4 +48,12 @@ public class GlobalVar {
 	 * 图片文件扩展名
 	 */
 	public final static String ImageExtendsionName = "bmp";
+	/**
+	 * 发送控制字
+	 */
+	public final static String CTRL_SEND = "SEND";
+	/**
+	 * 读取控制字
+	 */
+	public final static String CTRL_GET = "GET";
 }
