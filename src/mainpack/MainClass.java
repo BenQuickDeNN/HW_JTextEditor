@@ -206,6 +206,7 @@ public class MainClass {
 		/* 编辑菜单项目 */
 		MenuItem itemEditClear = new MenuItem("清空");				menuEdit.add(itemEditClear);			itemEditClear.addActionListener(ItemEditClearClickActionListener);
 		MenuItem itemEditInsertImage = new MenuItem("插入图片...");	menuEdit.add(itemEditInsertImage);		itemEditInsertImage.addActionListener(ItemEditInsertImageActionListener);
+		MenuItem itemEditClearImage = new MenuItem("清空图片");		menuEdit.add(itemEditClearImage);		itemEditClearImage.addActionListener(ItemEditClearImageActionListener);
 		MenuItem itemEditFind = new MenuItem("查找...");				menuEdit.add(itemEditFind);				itemEditFind.addActionListener(ItemEditFindClickActionListener);
 		MenuItem itemEditReplace = new MenuItem("替换...");			menuEdit.add(itemEditReplace);			itemEditReplace.addActionListener(ItemEditReplaceActionListener);
 		/* 设置菜单项目 */
@@ -692,6 +693,17 @@ public class MainClass {
 					actionPerformed(arg0);// 再做一次
 				}
 			}
+		}
+	};
+	/**
+	 * 清空图片
+	 */
+	ActionListener ItemEditClearImageActionListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			imagePane.setImage(null);
+			imagePane.repaint();
 		}
 	};
 	
