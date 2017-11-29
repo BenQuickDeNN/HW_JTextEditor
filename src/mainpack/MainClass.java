@@ -101,7 +101,7 @@ public class MainClass {
 	}
 	
 	
-	/***
+	/**
 	 * 初始化图形界面
 	 */
 	private void initialFrame(){
